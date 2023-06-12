@@ -248,7 +248,7 @@ int main()
 	Timers  decrement  from it_value to zero, generate a signal, and reset to it_interval.  A timer which
 	is set to zero (it_value is zero or the timer expires and it_interval is zero) stops.
 	*/
-    setitimer(ITIMER_REAL, &ti, NULL); // Start the real-time timersetitimer(ITIMER_REAL, &ti, NULL);
+    setitimer(ITIMER_REAL, &ti, NULL); // Start the real-time timer 
 
     // Register signal handlers
     if (-1 == sigaction(SIGIO, &sa_io, NULL)) { // Register the I/O signal handler for SIGIO
