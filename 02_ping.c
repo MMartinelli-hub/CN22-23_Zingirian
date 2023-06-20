@@ -1,4 +1,53 @@
 /*
+// ETHERNET FRAME STRUCTURE
+0                        6                        12        14
++------------------------+------------------------+---------+
+|   Destination MAC      |    Source MAC          |  Type   |
++------------------------+------------------------+---------+
+|                                                           |
+|                  Payload (varies in size)                 |
+|                                                           |
++-----------------------------------------------------------+
+|   Frame Check Sequence (FCS) (4 bytes, optional)          |
++-----------------------------------------------------------+
+// IP DATAGRAM
+0       4       8           14  16                              32
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version|  IHL  |    DSCP   |ECN|          Total Length         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Identification        |Flags|     Fragment Offset     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time to Live |    Protocol   |         Header Checksum       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           Source IP                           |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        Destination IP                         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                            Payload                            |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// TCP SEGMENT 
+0           8           16                                  32
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Source Port           |       Destination Port        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                          Sequence Number                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      Acknowledgment Number                    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| Data  |Reserved | Control |            Window Size            |
+| Offset|         |  Flags  |                                   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|           Checksum            |         Urgent Pointer        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                            Payload                            |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*/
+
+/*
 This program demonstrates network management functionalities using raw sockets in C.
 It performs a basic ICMP (ping) operation to send an ICMP echo request packet to a destination IP address and receive the corresponding ICMP echo response.
 
@@ -182,6 +231,55 @@ struct arp_packet {
     unsigned char dstmac[6];
     unsigned int dstip;
 };
+
+// TCP segment structure
+/*
+The TCP segment is a unit of data exchange in the TCP/IP protocol suite. It represents a portion of a TCP connection, carrying data between the source and destination.
+
+0           8           16                                  32
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Source Port           |       Destination Port        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                          Sequence Number                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      Acknowledgment Number                    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| Data  |Reserved | Control |            Window Size           |
+| Offset|         |  Flags  |                                   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|           Checksum            |         Urgent Pointer         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                            Payload                            |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    Source Port (16 bits): The port number of the sender.
+    Destination Port (16 bits): The port number of the intended recipient.
+    Sequence Number (32 bits): A unique number identifying each byte of data being sent.
+    Acknowledgment Number (32 bits): The next expected sequence number from the other side.
+    Data Offset (4 bits): The length of the TCP header in 32-bit words.
+    Reserved (3 bits): Reserved for future use.
+    Control Flags (9 bits): Various control flags for TCP operations (e.g., SYN, ACK, FIN).
+    Window Size (16 bits): The number of bytes the receiver can accept without acknowledgment.
+    Checksum (16 bits): A checksum value calculated over the TCP header and payload to ensure data integrity.
+    Urgent Pointer (16 bits): Points to the last byte of urgent data.
+    Payload: The actual data being transmitted in the TCP segment.
+*/
+
+struct tcp_segment {
+    unsigned short s_port;      // Source Port
+    unsigned short d_port;      // Destination Port
+    unsigned int seq;           // Sequence Number
+    unsigned int ack;           // Acknowledgment Number
+    unsigned char d_offs_res;   // Data Offset (4 bits) + Reserved (3 bits)
+    unsigned char flags;        // Control Flags (9 bits)
+    unsigned short window;      // Window Size
+    unsigned short checksum;    // Checksum
+    unsigned short urgp;        // Urgent Pointer
+    unsigned char payload[TCP_MSS];  // Payload
+};
+
 
 // Function declarations
 void forge_eth(struct ethernet_frame *eth, unsigned char *dst, unsigned short type);
