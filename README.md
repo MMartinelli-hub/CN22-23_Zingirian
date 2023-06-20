@@ -29,3 +29,5 @@
 - **Exam09072013_Ping_EchoReply.c**: Modify the ping.c program so that it is able to forge echo responses.
 - **Exam11072018_Ping_Nat.c**: Modify the ping.c program so that it acts like a NAT from origin to Google homepage.
 - **Exam19062018_Ping_SynAck.c**: Modify the ping.c program so that it is able to forge TCP responses.
+
+### See also [this repo](https://github.com/nicomazz/ComputerNetworks-unipd2018).
