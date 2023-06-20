@@ -26,10 +26,10 @@
 #include <time.h>
 
 unsigned char broadcast[6]={0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
-unsigned char mymac[6] = { 0xbe,0x63,0xb2,0xfb,0x8d,0x33} ; 
-unsigned char myip[4] = { 89,40,142,15 }; 
+unsigned char mymac[6] = { 0xf2,0x3c,0x91,0xdb,0xc2,0x98} ; 
+unsigned char myip[4] = { 88,80,187,84 }; 
 unsigned char netmask[4]={255,255,255,0};
-unsigned char gateway[4]={89,40,142,1};
+unsigned char gateway[4]={88,80,187,1};
 
 //##
 struct tcp_segment {
@@ -45,14 +45,14 @@ struct tcp_segment {
 };
 
 //##
-int forge_tcp(struct tcp_segment* tcp, unsigned short sport, unsigned short dport, unsigned int seq, unsigned int ack, unsigned char flags) {
+int forge_tcp(struct tcp_segment* tcp, unsigned short sport, unsigned short dport, unsigned int seq, unsigned int ack, unsigned char flags, unsigned short window) {
    tcp->sport = htons(sport); //to be passed as rand each time
    tcp->dport = htons(dport); //default web service port
    tcp->seq = htonl(seq); //to be passed as rand each time
    tcp->ack = htonl(ack); 
    tcp->dataoff_res = 0x50; //min length packet = 5 x 32 bits, reserved must be set at 0
    tcp->flags = flags; //SYN is flag 2
-   tcp->window = 0xFFFF; //imposed
+   tcp->window = window; //imposed
    tcp->checksum = 0; //to be init
    tcp->urg = 0; //imposed
 
@@ -112,7 +112,7 @@ unsigned int dstip;
 
 //void forge_eth( struct ethernet_frame * eth, unsigned char *dst, unsigned short type );
 void printbuf ( unsigned char * b, int s);
-void forge_eth( struct ethernet_frame * eth, unsigned char* src, unsigned char *dst, unsigned short type);
+void forge_eth( struct ethernet_frame * eth, unsigned char *dst, unsigned short type);
 
 int s; //Global socket
 struct sockaddr_ll sll;
@@ -124,7 +124,7 @@ struct ethernet_frame * eth;
 struct arp_packet * arp;
 eth = (struct ethernet_frame *) buffer;
 arp = (struct arp_packet * ) eth->payload;
-forge_eth(eth,mymac,broadcast,0x0806);
+forge_eth(eth,broadcast,0x0806);
 arp->haddr = htons(1); arp->paddr = htons(0x0800);
 arp->hlen = 6; arp->plen = 4; arp->op = htons(1);
 for(int i=0; i<6; i++) arp->srcmac[i]=mymac[i];
@@ -175,6 +175,35 @@ if ( i*2 != s ){
 return  (0xFFFF-(unsigned short)tot);
 }
 
+unsigned short int compl1( char * b, int len)
+{
+unsigned short total = 0;
+unsigned short prev = 0;
+unsigned short *p = (unsigned short * ) b;
+int i;
+for(i=0; i < len/2 ; i++){
+	total += ntohs(p[i]);
+	if (total < prev ) total++;
+	prev = total;
+	} 
+if ( i*2 != len){
+	//total += htons(b[len-1]<<8); 
+	total += htons(p[len/2])&0xFF00;
+	if (total < prev ) total++;
+	prev = total;
+	} 
+return (total);
+}
+
+unsigned short int checksum2 ( char * b1, int len1, char* b2, int len2)
+{
+unsigned short prev, total;
+prev = compl1(b1,len1); 
+total = (prev + compl1(b2,len2));
+if (total < prev ) total++;
+return (0xFFFF - total);
+}
+
 int forge_icmp(struct icmp_packet * icmp){
 int i;
 icmp->type = 8;
@@ -187,7 +216,7 @@ icmp->checksum = htons(checksum(icmp,40));
 return 40;
 }
 
-void forge_ip(struct ip_datagram * ip, unsigned char* src, unsigned char* dst,  unsigned short payloadlen, unsigned char proto  )
+void forge_ip(struct ip_datagram* ip, unsigned char* dst, unsigned short payloadlen, unsigned char proto )
 {
 ip->ver_ihl = 0x45;
 ip->tos = 0;
@@ -197,14 +226,14 @@ ip->flags_offs = 0;
 ip->ttl = 128;
 ip->proto = proto;
 ip->checksum = 0;
-ip->src = *(unsigned int *)src;
+ip->src = *(unsigned int *)myip;
 ip->dst = *(unsigned int *)dst;
 ip->checksum = htons(checksum(ip,20));
 }
-void forge_eth( struct ethernet_frame * eth, unsigned char* src, unsigned char *dst, unsigned short type)
+void forge_eth( struct ethernet_frame * eth, unsigned char *dst, unsigned short type)
 {
 for(int i=0;i<6;i++) eth->dst[i] = dst[i];
-for(int i=0;i<6;i++) eth->src[i] = src[i];
+for(int i=0;i<6;i++) eth->src[i] = mymac[i];
 eth->type = htons(type);
 }
 
@@ -235,9 +264,9 @@ unsigned char rcvbuf[1500];
 unsigned char buf[1500];
 int main(){
 int t,len;
-unsigned char destip[4] = {88,80,187,84};
+unsigned char destip[4] = {89,40,142,15};
 //unsigned char destip[4] = {147,162,2,100};
-unsigned char destmac[6]; 
+unsigned char destmac[6] = {0xbe, 0x63, 0xb2, 0xfb, 0x8d, 0x33}; 
 
 //## struct icmp_packet *icmp;
 struct tcp_segment *tcp;
@@ -253,12 +282,13 @@ srand(time(NULL));
 unsigned short sport = (unsigned short)(rand()%1000);
 //unsigned short dport = 80;
 unsigned short dport = 19646;
+unsigned short window = 0xFFFF;
 unsigned int seq = (unsigned short)(rand() % 1000);
 printf("Random src port: %hu - Random seq num: %u\n", sport, seq);
 //## len = forge_icmp(icmp);
-len = forge_tcp(tcp, sport, dport, seq, (unsigned int)0, 2);
+len = forge_tcp(tcp, sport, dport, seq, (unsigned int)0, 2, window);
 //## forge_ip(ip,destip,len, 1); 
-forge_ip(ip,myip,destip,len, 6); 
+forge_ip(ip,destip,len, 6); 
 
 //##
 struct tcp_pseudo pseudo;
@@ -278,99 +308,113 @@ for(int i=0; i<sizeof(struct sockaddr_ll); i++) ((char*)&sll)[i]=0;
 sll.sll_family=AF_PACKET;
 sll.sll_ifindex = if_nametoindex("eth0");
 len = sizeof(struct sockaddr_ll);
-printf("Resolve MAC:\n");
-printf("Sending Ping Packet:\n");
-if(((*(unsigned int*)myip)&(*(unsigned int*)netmask)) ==
-   (*(unsigned int*)destip&(*(unsigned int*)netmask)) )
-		{ if(arp_resolve(*(unsigned int*)destip,destmac)) return 1;}
-else  
-		{ if(arp_resolve(*(unsigned int*)gateway,destmac)) return 1;}
 
-	forge_eth(eth,mymac,destmac,0x0800);
+forge_eth(eth,destmac,0x0800);
 	
-t = sendto(s, buf, 14+20+40, 0 ,(struct sockaddr *) &sll, len);
-if ( t == -1) {perror("sendto Failed"); return 1;}
-printf("\n###########################################\n");
-printbuf(buf, 14);
-printbuf(buf+14, 20+40);
-printf("TCP segment: %d bytes sent\n",t); 
-printf("Eth type: %hu - ", eth->type);
-printf("Ip proto: %u - ", ip->proto);
-printf("Tcp src: %u - Tcp dst: %u - ", htons(tcp->sport), htons(tcp->dport));
-printf("Tcp seq: %u - Tcp ack: %u - ", htonl(tcp->seq), htonl(tcp->ack));
-printf("Tcp flags: %u\n", tcp->flags);
+memset(buf, 0, sizeof(struct ethernet_frame)+sizeof(struct ip_datagram)+sizeof(struct tcp_segment));
 
+while(1) { 
+   t = recvfrom(s, buf, 1500, 0 ,(struct sockaddr *) &sll, &len);
+	if ( t == -1) {perror("recvfrom Failed"); return 1;} 
 
-if(htons(tcp->dport) >= 19000 && htons(tcp->dport) <= 19999) {
-   printf("\n!! TCP DST PORT IN RANGE 19000-19999 !!\n!! FORGING MANUALLY TCP RESPONSE !!\n");
-   
-   if(tcp->flags == 2)
-      printf("!! SYN Received !!\n");
-
-   // memset below a bit overkill maybe
-   memset(buf, 0, sizeof(struct ethernet_frame)+sizeof(struct ip_datagram)+sizeof(struct tcp_segment));
-   memset(tcp, 0, sizeof(struct tcp_segment));
-   memset(ip, 0, sizeof(struct ip_datagram));
-   memset(&pseudo, 0, sizeof(struct tcp_pseudo));
-   memset(eth, 0, sizeof(struct ethernet_frame));
-
-   //## len = forge_icmp(icmp);
-   len = forge_tcp(tcp, dport, sport, seq, seq+1, 18);
-   //## forge_ip(ip,destip,len, 1); 
-   forge_ip(ip,destip,myip,len, 6); 
-
-   //##
-   memcpy(pseudo.tcp_packet, tcp, 20);
-   pseudo.zero = 0;
-   pseudo.saddr = ip->src;
-   pseudo.daddr = ip->dst;
-   pseudo.prot = 6;
-   pseudo.len = htons(20);
-   tcp->checksum = htons(checksum((unsigned char*)&pseudo, 20+12));
-
-	forge_eth(eth,destmac,mymac,0x0800);
-   t = 14+20+40;
-   
-   /*
-   printf("Eth type: %hu - ", eth->type);
-   printf("Ip proto: %u - ", ip->proto);
-   printf("Tcp src: %u - Tcp dst: %u - ", htons(tcp->sport), htons(tcp->dport));
-   printf("Tcp seq: %u - Tcp ack: %u - ", htonl(tcp->seq), htonl(tcp->ack));
-   printf("Tcp flags: %u\n", tcp->flags);
-   */
-} 
-
-while(1){
-   if(!(htons(tcp->sport) >= 19000 && htons(tcp->sport) <= 19999)) {
-      //if the response has been forged manually we don't need to receive it
-      t = recvfrom(s, buf, 1500, 0 ,(struct sockaddr *) &sll, &len);
-   }
-	if ( t == -1) {perror("recvfrom Failed"); return 1;}
- 
    //##
    if(htons(eth->type)==0x0800) {
-      if(ip->proto == 6) {
-         if(tcp->sport == htons(dport)){
-            if(tcp->dport == htons(sport)) {
-               if(tcp->ack == htonl(seq+1)) {
-                  if(tcp->flags = 18) {
-                     printf("Received TCP Response: \n");
-                     printbuf(buf, 14);
-                     printbuf(buf+14, 60-14);
+      if(ip->proto == 6){
+         if(htons(tcp->dport) >= 19000 && htons(tcp->dport) <= 19999) {
+         printf("\n!! TCP DST PORT IN RANGE 19000-19999 !!\n!! FORGING MANUALLY TCP RESPONSE !!\n");
+        
+         printf("\nRECEIVED ##################################\n");
 
-                     printf("Eth type: %hu - ", eth->type);
-                     printf("Ip proto: %u - ", ip->proto);
-                     printf("Tcp src: %u - Tcp dst: %u - ", htons(tcp->sport), htons(tcp->dport));
-                     printf("Tcp seq: %u - Tcp ack: %u - ", htonl(tcp->seq), htonl(tcp->ack));
-                     printf("Tcp flags: %u\n", tcp->flags);
+         printbuf(buf, 14);
+         printbuf(buf+14, 20+20);
+         printf("TCP segment: %d bytes sent\n",t); 
+         printf("Eth type: %hu - ", eth->type);
+         printf("Ip proto: %u - ", ip->proto);
+         printf("Tcp src: %u - Tcp dst: %u - ", htons(tcp->sport), htons(tcp->dport));
+         printf("Tcp seq: %u - Tcp ack: %u - ", htonl(tcp->seq), htonl(tcp->ack));
+         printf("Tcp flags: %u\n", tcp->flags);
+
+         for(int i=0; i<6; i++)
+            destmac[i] = eth->src[i];
+
+         unsigned int dstip = ip->src;
+         unsigned short dstport = htons(tcp->sport);
+         unsigned int ack = (ntohl(tcp->seq))+1;
+         //unsigned short srcport = (unsigned short)rand();
+         unsigned short srcport = htons(tcp->dport); 
+         //window = tcp->window;
+         window = 0xFFFF;   
+
+         struct tcp_segment *tcp_send;
+         struct ip_datagram * ip_send;
+         struct ethernet_frame * eth_send;
+
+         memset(tcp, 0, sizeof(struct tcp_segment));
+         memset(ip, 0, sizeof(struct ip_datagram));
+         memset(&pseudo, 0, sizeof(struct tcp_pseudo));
+
+         ip = (struct ip_datagram *) (eth->payload);
+         tcp = (struct tcp_segment *) (ip->payload);
+
+         len = forge_tcp(tcp, srcport, dstport, (unsigned int)rand(), ack, 18, window);
+         forge_ip(ip, (unsigned char*)&dstip, len, 6);
+
+         memcpy(pseudo.tcp_packet, tcp, 20);
+         pseudo.zero = 0;
+         pseudo.saddr = ip->src;
+         pseudo.daddr = ip->dst;
+         pseudo.prot = 6;
+         pseudo.len = htons(20);
+         tcp->checksum = htons(checksum2((unsigned char*)&pseudo, 12, (unsigned char*) tcp, 20));
+         
+         forge_eth(eth,destmac,0x0800);
+
+         t = sendto(s, buf, 14+20+20, 0 ,(struct sockaddr *) &sll, 20);
+
+         printf("\nSENT ######################################\n");
+
+         printbuf(buf, 14);
+         printbuf(buf+14, 20+20);
+         printf("TCP segment: %d bytes sent\n",t); 
+         printf("Eth type: %hu - ", eth->type);
+         printf("Ip proto: %u - ", ip->proto);
+         printf("Tcp src: %u - Tcp dst: %u - ", htons(tcp->sport), htons(tcp->dport));
+         printf("Tcp seq: %u - Tcp ack: %u - ", htonl(tcp->seq), htonl(tcp->ack));
+         printf("Tcp flags: %u\n", tcp->flags);
+
+         while(1) {
+            t = recvfrom(s, buf, 1500, 0 ,(struct sockaddr *) &sll, &len);
+               if ( t == -1) {perror("recvfrom Failed"); return 1;} 
+
+               //##
+            if(htons(eth->type)==0x0800) {
+               if(ip->proto == 6){
+                  if(htons(tcp->dport) == srcport) {
+                     if(tcp->flags == 16) {
+                        printf("\n############ ACK RECEIVED #############\n");
+                        printbuf(buf, 14);
+                        printbuf(buf+14, 20+20);
+                        printf("TCP segment: %d bytes received\n",t); 
+                        printf("Eth type: %hu - ", eth->type);
+                        printf("Ip proto: %u - ", ip->proto);
+                        printf("Tcp src: %u - Tcp dst: %u - ", htons(tcp->sport), htons(tcp->dport));
+                        printf("Tcp seq: %u - Tcp ack: %u - ", htonl(tcp->seq), htonl(tcp->ack));
+                        printf("Tcp flags: %u\n", tcp->flags);
+                     }
+                     else {
+                        printf("\n### ERROR: dport: %u - flags: %u ###\n", htons(tcp->dport), tcp->flags);
+                     }
 
                      break;
                   }
                }
-            }
+            }  
          }
-      }
+         break;
    }
 }
 
-} 
+}
+
+}
+}
