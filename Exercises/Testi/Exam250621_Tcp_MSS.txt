@@ -1,0 +1,20 @@
+The TCP protocol, during the three-way handshaking, allows each peer to specify to the other peer the maximum acceptable size of the incoming segments.
+
+This feature is documented in the RFC793, chapter 3.1, as the Maximum Segment Size (MSS) Option. Consider that, in general, a TCP header can embed more than one option. 
+
+The program tcp.c, developed in the class, is now requested to support also the MSS feature for both incoming and outgoing segments, by
+    • Specifying a small size (e.g., 500 bytes) to the remote tcp  peer
+    • Learning the maximum size required by the remote tcp peer 
+    • Adjusting the outgoing segment size appropriately
+    • Verifying that both peers comply with the MSS specifications
+
+For the verification purpose, the program should print to the standard output, for each segment, the direction (inbound vs. outbound), the active flags (ACK,SYN,FIN) and the segment size in bytes, one per row, according to the following format (literals are in bold):
+
+(IN|OUT <SP> SYN|ACK|FIN|SYN+ACK|FIN+ACK <SP><segm.size[B]><LF>)*
+
+In the top of your source program, add the following contents in a /*comment section*/ :
+    1) Describe the point of the program where you apply the changes
+    2) Define the logic of the changes
+    3) Report the results of the test 
+OR
+    1) RETIRED, if you want to cancel the exam. 

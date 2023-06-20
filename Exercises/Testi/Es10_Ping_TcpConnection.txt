@@ -1,0 +1,60 @@
+Modify the program ping.c, so that, instead of sending a request of the icmp echo request type on an IP packet, it sends a request for TCP connection to a web service on an IP packet addressed to 147.162..X, waits for and processes the reply.
+
+The TCP connection request has the following format:
+
+
+
+
+  0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |          Source Port          |       Destination Port        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                        Sequence Number                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                    Acknowledgment Number                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Data |           |U|A|P|R|S|F|                               |
+   | Offset| Reserved  |R|C|S|S|Y|I|            Window             |
+   |       |           |G|K|H|T|N|N|                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           Checksum            |         Urgent Pointer        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                    Options                    |    Padding    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                             data                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                            TCP Header Format
+
+          Note that one tick mark represents one bit position.
+
+                              
+
+With the following requirements
+
+    • The SYN flag is set to 1 to indicate the connection request 
+    • The destination port is the standard web service
+    • port The source port is an arbitrary number that is always different for each connection request
+    • The Sequence field contains an always different arbitrary number for each connection request. 
+    • The Acknowledgment field is irrelevant
+    • The checksum field is calculated using the same checksum algorithm as the IP packet, and applied to the following fields: source IP address (contained in the IP packet), IP address (contained in the IP packet) destination source port and destination port (contained in the TCP segment). 
+    • The urgent pointer field is set to 0. 
+    • The advertised window0xFFFF
+    • The payload field is empty.
+    • No options/padding. 
+
+
+To verify correct operation, automatically check that a TCP segment is received in response with the following requirements:
+
+    • That the source port corresponds to the standard port of the web service
+    • That the destination port corresponds to the source port indicated in the request 
+    • That the Acknowledgment field carry an equal to the Sequence number shown on the request increased by 1
+    • Have the SYN and ACK flags set to 1. 
+
+
+
+
+ 
+
+ 

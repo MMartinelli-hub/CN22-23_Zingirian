@@ -1,0 +1,30 @@
+
+
+Modify ping.c program to make it able to receive ethernet frames from the network and calculate the following statistics:
+
+on all ethernet packets: 
+% frames containing IP packets 
+% frames containing ARP packets
+% frames containing neither IP nor ARP
+
+packets On all IP
+packets% packets containing TCP segments
+% packets containing UDP segments
+% packets containing ICMP packets
+% packets containing other payload
+
+
+The program receives 1000 packets from the network, counts and, after receiving the thousandth, writes the statistics. 
+
+
+
+
+
+
+
+
+
+
+
+
+ 
