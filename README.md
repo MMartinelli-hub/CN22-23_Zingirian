@@ -16,7 +16,7 @@
 - [**05_gobackn.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/05_gobackn.c): Go-Back-N Protocol Implementation.
 - [**06_arpcache.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/06_arpcache.c): ARP caching Implementation.
 - [**07_environ.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/07_environ.c): ARP resolver implementation.
-- [**08_tcp.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/08_tcp.c): A (really chaotic) 3-Way Handshake TCP implementation.
+- [**08_tcp.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/08_tcp.c): A (really chaotic) 3-Way Handshake TCP implementation with congestion control and MSS (Maximum Segment Size) implemented
 
 ### Exercises:
 - [**Es6_Ping_IcmpTimeExcedeed.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Es6_Ping_IcmpTimeExcedeed.c): Modify the ping so that the ttl is small enough for preventing the packet reaching destination. Intercept the ICMP "Time Excedeed" message and manage it.
