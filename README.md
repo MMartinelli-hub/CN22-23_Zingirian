@@ -22,12 +22,13 @@
 - **Es8_Ping_Statistics.c**: Modify the ping.c program to make it able to receive ethernet frames from the network and calculate statistics on all ethernet packets and on all IP packets.
 - **Es9_Ping_RecordRoute.c**: Modify the ping.c program adding the "Record Route" option in the IP datagram.
 - **Es10_Ping_TcpConnection.c**: Modify the program ping.c, so that, instead of sending a request of the icmp echo request type on an IP packet, it sends a request for TCP connection to a web service on an IP packet addressed to 147.162..X, waits for and processes the reply.
-- **Exam200621_Tcp_UnreachableDest.c**: Modify the tcp.c program so that it is able to recognize, in reception, the ICMP message "unreachable destination", and supports the correct handling.
-- **Exam220714_Ping_IcmpSplit**: Modify the ping.c program so that it sends the IP payload split in two parts.
-- **Exam250621_Tcp_MSS.c**: Modify the tcp.c program to support the MSS option.
+- **Exam-11-07-2018_Ping_Nat.c**: Modify the ping.c program so that it acts like a NAT from origin to Google homepage.
+- **Exam-19-06-2018_Ping_SynAck.c**: Modify the ping.c program so that it is able to forge TCP responses.
+- **Exam-22-07-2014_Ping_IcmpSplit**: Modify the ping.c program so that it sends the IP payload split in two parts.
 - **Exam290121_Ping_UnreachableDest**: Modify the ping.c program so that it is able to recognize, in reception, the ICMP message "unreachable destination", and supports the correct handling.
-- **Exam09072013_Ping_EchoReply.c**: Modify the ping.c program so that it is able to forge echo responses.
-- **Exam11072018_Ping_Nat.c**: Modify the ping.c program so that it acts like a NAT from origin to Google homepage.
-- **Exam19062018_Ping_SynAck.c**: Modify the ping.c program so that it is able to forge TCP responses.
-
+- **Exam-20-07-2021_Tcp_UnreachableDest.c**: Modify the tcp.c program so that it is able to recognize, in reception, the ICMP message "unreachable destination", and supports the correct handling.
+- **Exam-21-06-2017_Tcp_WindowScale.c**: Modify the tcp.c program so that it is able to support the 'Window Scale' TCP option.
+- **Exam-21-06-2017_Tcp_WindowScale.c**: Modify the tcp.c program so that it is able to support the 'Round Trip Time' TCP option.
+- **Exam25-06-2021_Tcp_MSS.c**: Modify the tcp.c program so that it is able to support the 'Maximum Segment Size' TCP option.
+ 
 ### See also [this repo](https://github.com/nicomazz/ComputerNetworks-unipd2018).
