@@ -1,0 +1,27 @@
+The program esame.c is the copy of /CN21/congctrl.c program, that processes the
+incoming Web requests, implementing the HTTP / TCP / IP / Ethernet stack, equipped with the
+congestion control basic mechanism. 
+
+A Web browser can connect to it through the URL
+http://88.80.187.84:<port>/file.jpg (the file.jpg is in your home directories)
+where the <port>1 is the one specified in the first command line parameter argv[1] and the
+file.jpg is in your home directories.
+
+The esame.c program estimates the Round Trip Time by matching the transmission time of
+segments (only if transmitted once) with the corresponding acknowledge time, using the time
+difference as Round Trip Time Measurement (RTTM) useful for the prediction.
+
+Section 3 of the RFC 1323 introduced an enhancement of the RTTM by adding a new TCP header
+options field (Timestamp), in which each TCP peer provides the other peer with the following data:
+a) its own updated local timestamp sample
+b) the latest significant peer’s timestamp sample previously received, defined according to the
+specific logic described in Paragraph 3.4
+
+You are requested to implement and test this mechanism in the esame.c program to make it
+properly send the additional samples requested and properly use the additional received sample.
+
+In the top of your source program, please, add the following contents in a /*comment section*/ :
+1) Describe the point of the program where you apply the changes
+2) Comment the logic suggested by the RFC 1323, Section 3.
+3) Report the results of the test comparing the execution of the original and of the modified
+programs
