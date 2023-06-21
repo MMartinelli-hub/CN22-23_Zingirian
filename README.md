@@ -19,20 +19,20 @@
 - [**08_tcp.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/08_tcp.c): A (really chaotic) 3-Way Handshake TCP implementation.
 
 ### Exercises:
-- **Es6_Ping_IcmpTimeExcedeed.c**: Modify the ping so that the ttl is small enough for preventing the packet reaching destination. Intercept the ICMP "Time Excedeed" message and manage it.
-- **Es7_Ping_IcmpUnreachableDest.c**: Modify the ping.c program so that it is able to recognize, in reception, as well as the usual ICMP "message echo reply", also another type of ICMP message, called "unreachable destination".
-- **Es8_Ping_Statistics.c**: Modify the ping.c program to make it able to receive ethernet frames from the network and calculate statistics on all ethernet packets and on all IP packets.
-- **Es9_Ping_RecordRoute.c**: Modify the ping.c program adding the "Record Route" option in the IP datagram.
-- **Es10_Ping_TcpConnection.c**: Modify the program ping.c, so that, instead of sending a request of the icmp echo request type on an IP packet, it sends a request for TCP connection to a web service on an IP packet addressed to 147.162..X, waits for and processes the reply.
-- **Exam-11-07-2018_Ping_Nat.c**: Modify the ping.c program so that it acts like a NAT from origin to Google homepage.
-- **Exam-19-06-2018_Ping_SynAck.c**: Modify the ping.c program so that it is able to forge TCP responses.
-- **Exam-22-07-2014_Ping_IcmpSplit**: Modify the ping.c program so that it sends the IP payload split in two parts.
-- **Exam-29-01-2021_Ping_UnreachableDest**: Modify the ping.c program so that it is able to recognize, in reception, the ICMP message "unreachable destination", and supports the correct handling.
-- **Exam-20-07-2021_Tcp_UnreachableDest.c**: Modify the tcp.c program so that it is able to recognize, in reception, the ICMP message "unreachable destination", and supports the correct handling.
-- **Exam-21-06-2017_Tcp_WindowScale.c**: Modify the tcp.c program so that it is able to support the 'Window Scale' TCP option.
-- **Exam-23-06-2022_TcpRttm.c**: Modify the tcp.c program so that it is able to support the 'Round Trip Time' TCP option.
-- **Exam-25-06-2021_Tcp_MSS.c**: Modify the tcp.c program so that it is able to support the 'Maximum Segment Size' TCP option.
-- **Exam-26-07-2022_Tcp_Sack.c**: Modify the tcp.c program so that it is able to support the 'Selective Acknowledgment' TCP option.
+- [**Es6_Ping_IcmpTimeExcedeed.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Es6_Ping_IcmpTimeExcedeed.c): Modify the ping so that the ttl is small enough for preventing the packet reaching destination. Intercept the ICMP "Time Excedeed" message and manage it.
+- [**Es7_Ping_IcmpUnreachableDest.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Es7_Ping_IcmpUnreachableDest.c): Modify the ping.c program so that it is able to recognize, in reception, as well as the usual ICMP "message echo reply", also another type of ICMP message, called "unreachable destination".
+- [**Es8_Ping_Statistics.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Es8_Ping_Statistics.c): Modify the ping.c program to make it able to receive ethernet frames from the network and calculate statistics on all ethernet packets and on all IP packets.
+- [**Es9_Ping_RecordRoute.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Merlo_Versions/Es9_Ping_RecordRoute.c): Modify the ping.c program adding the "Record Route" option in the IP datagram.
+- [**Es10_Ping_TcpConnection.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Es10_Ping_TcpConnection.c): Modify the program ping.c, so that, instead of sending a request of the icmp echo request type on an IP packet, it sends a request for TCP connection to a web service on an IP packet addressed to 147.162..X, waits for and processes the reply.
+- [**Exam-11-07-2018_Ping_Nat.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-11-07-2018_Ping_Nat.c): Modify the ping.c program so that it acts like a NAT from origin to Google homepage.
+- [**Exam-19-06-2018_Ping_SynAck.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-19-06-2018_Ping_SynAck.c): Modify the ping.c program so that it is able to forge TCP responses.
+- [**Exam-22-07-2014_Ping_IcmpSplit**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-22-07-2014_Ping_IcmpSplit.c): Modify the ping.c program so that it sends the IP payload split in two parts.
+- [**Exam-29-01-2021_Ping_UnreachableDest**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-29-02-2021_Ping_UnreachableDest.c): Modify the ping.c program so that it is able to recognize, in reception, the ICMP message "unreachable destination", and supports the correct handling.
+- [**Exam-20-07-2021_Tcp_UnreachableDest.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-20-07-2021_Tcp_UnreachableDest.c): Modify the tcp.c program so that it is able to recognize, in reception, the ICMP message "unreachable destination", and supports the correct handling.
+- [**Exam-21-06-2017_Tcp_WindowScale.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-21-06-2017_Tcp_WindowScale.c): Modify the tcp.c program so that it is able to support the 'Window Scale' TCP option.
+- [**Exam-23-06-2022_TcpRttm.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-23-06-2022_TcpRttm.c): Modify the tcp.c program so that it is able to support the 'Round Trip Time' TCP option.
+- [**Exam-25-06-2021_Tcp_MSS.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-25-06-2021_Tcp_MSS.c): Modify the tcp.c program so that it is able to support the 'Maximum Segment Size' TCP option.
+- [**Exam-26-07-2022_Tcp_Sack.c**](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-26-07-2022_Tcp_Sack.c): Modify the tcp.c program so that it is able to support the 'Selective Acknowledgment' TCP option.
  
 ### See also [this repo](https://github.com/nicomazz/ComputerNetworks-unipd2018).
 
