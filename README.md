@@ -2,8 +2,10 @@
 
 ## Particularly noticeable:
 - [02_ping.c](https://github.com/MMartinelli-hub/CN22-23/blob/main/02_ping.c)
-- [Exam11072018_Ping_Nat.c](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam11072018_Ping_Nat.c)
-- [Exam19062018_Ping_SynAck.c](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam19062018_Ping_SynAck.c)
+- [Exam-11-07-2018_Ping_Nat.c](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-11-07-2018_Ping_Nat.c)
+- [Exam-19-06-2018_Ping_SynAck.c](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-19-06-2018_Ping_SynAck.c)
+- [Exam-21-06-2017_Tcp_WindowScale.c](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-21-06-2017_Tcp_WindowScale.c)
+- [Exam-26-07-2022_Tcp_Sack.c](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-26-07-2022_Tcp_Sack.c)
 
 ## Table of Contents:
 ### Main folder:
@@ -25,10 +27,11 @@
 - **Exam-11-07-2018_Ping_Nat.c**: Modify the ping.c program so that it acts like a NAT from origin to Google homepage.
 - **Exam-19-06-2018_Ping_SynAck.c**: Modify the ping.c program so that it is able to forge TCP responses.
 - **Exam-22-07-2014_Ping_IcmpSplit**: Modify the ping.c program so that it sends the IP payload split in two parts.
-- **Exam290121_Ping_UnreachableDest**: Modify the ping.c program so that it is able to recognize, in reception, the ICMP message "unreachable destination", and supports the correct handling.
+- **Exam-29-01-2021_Ping_UnreachableDest**: Modify the ping.c program so that it is able to recognize, in reception, the ICMP message "unreachable destination", and supports the correct handling.
 - **Exam-20-07-2021_Tcp_UnreachableDest.c**: Modify the tcp.c program so that it is able to recognize, in reception, the ICMP message "unreachable destination", and supports the correct handling.
 - **Exam-21-06-2017_Tcp_WindowScale.c**: Modify the tcp.c program so that it is able to support the 'Window Scale' TCP option.
-- **Exam-21-06-2017_Tcp_WindowScale.c**: Modify the tcp.c program so that it is able to support the 'Round Trip Time' TCP option.
-- **Exam25-06-2021_Tcp_MSS.c**: Modify the tcp.c program so that it is able to support the 'Maximum Segment Size' TCP option.
+- **Exam-23-06-2022_TcpRttm.c**: Modify the tcp.c program so that it is able to support the 'Round Trip Time' TCP option.
+- **Exam-25-06-2021_Tcp_MSS.c**: Modify the tcp.c program so that it is able to support the 'Maximum Segment Size' TCP option.
+- **Exam-26-07-2022_Tcp_Sack.c**: Modify the tcp.c program so that it is able to support the 'Selective Acknowledgment' TCP option.
  
 ### See also [this repo](https://github.com/nicomazz/ComputerNetworks-unipd2018).
