@@ -217,9 +217,8 @@ tcp->checksum = htons(checksum((unsigned char*)&pseudo,TCP_TOTAL_LEN+12));
 #include <arpa/inet.h>
 
 void print_ip(unsigned int ip){
-   struct in_addr ip_addr;
-   ip_addr.s_addr = ip;
-   printf("%s\n",inet_ntoa(ip_addr));
+   unsigned char* octets = (unsigned char*) &ip->src;
+    printf("IP address: %hhu.%hhu.%hhu.%hhu\n", octets[0], octets[1], octets[2], octets[3]);
 }
 
 ```
