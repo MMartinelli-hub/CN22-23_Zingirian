@@ -7,10 +7,57 @@
 - We define a tcp_segment struct
 - We define a tcp_pseudo for the tcp pseudo header (used to compute the checksum)
 - We modify the main
-   > the forge ip protocol parameter is set to 6
-   > the intercept is changed so to intercept TCP responses
+   > the intercept is changed so to intercept TCP segments having destination ports 20646 or 30646
+   > if dport == 20646 we store source ip and tcp source port, and modify the tcp segment changing appropriately: 
+      * dest mac
+      * source mac
+      * source ip
+      * dest ip
+      * ip checksum
+      * tcp source port
+      * tcp destination port
+      * tcp checksum
+   so to forward the segment to google
+   > if dport == 30646 we modify the tcp segment so to forward it to the ip address and tcp port stored (see above) 
 
    All the modifications to the code can be found by searching for '##'
+
+# OUTPUT #
+> tested using "$curl 89.40.142.15:20646 -H "Host: www.google.it" from Zingi's machine
+
+> !! ORIGIN-RECEIVED TCP DST PORT 20646 !! FWD TO GOOGLE #################################
+   TCP segment: 74 bytes sent
+   Eth type: 8 - Ip proto: 6 - Tcp src: 53242 - Tcp dst: 20646 - Tcp seq: 3788043919 - Tcp ack: 0 - Tcp flags: 2
+
+   FORWARDED TO GOOGLE ######################################
+   TCP segment: 74 bytes sent
+   Eth type: 8 - Ip proto: 6 - Tcp src: 30646 - Tcp dst: 80 - Tcp seq: 3788043919 - Tcp ack: 0 - Tcp flags: 2
+
+   !! GOOGLE-RECEIVED TCP DST PORT 30646 !! FWD TO ORIGIN ##################################
+   TCP segment: 74 bytes sent
+   Eth type: 8 - Ip proto: 6 - Tcp src: 80 - Tcp dst: 30646 - Tcp seq: 3550414607 - Tcp ack: 3788043920 - Tcp flags: 18
+
+   FORWARDED TO ORIGIN ######################################
+   TCP segment: 74 bytes sent
+   Eth type: 8 - Ip proto: 6 - Tcp src: 20646 - Tcp dst: 53242 - Tcp seq: 3550414607 - Tcp ack: 3788043920 - Tcp flags: 18
+
+   !! ORIGIN-RECEIVED TCP DST PORT 20646 !! FWD TO GOOGLE #################################
+   TCP segment: 66 bytes sent
+   Eth type: 8 - Ip proto: 6 - Tcp src: 53242 - Tcp dst: 20646 - Tcp seq: 3788043920 - Tcp ack: 3550414608 - Tcp flags: 16
+
+   FORWARDED TO GOOGLE ######################################
+   TCP segment: 66 bytes sent
+   Eth type: 8 - Ip proto: 6 - Tcp src: 30646 - Tcp dst: 80 - Tcp seq: 3788043920 - Tcp ack: 3550414608 - Tcp flags: 16
+
+   !! ORIGIN-RECEIVED TCP DST PORT 20646 !! FWD TO GOOGLE #################################
+   TCP segment: 143 bytes sent
+   Eth type: 8 - Ip proto: 6 - Tcp src: 53242 - Tcp dst: 20646 - Tcp seq: 3788043920 - Tcp ack: 3550414608 - Tcp flags: 16
+
+   FORWARDED TO GOOGLE ######################################
+   TCP segment: 143 bytes sent
+   Eth type: 8 - Ip proto: 6 - Tcp src: 30646 - Tcp dst: 80 - Tcp seq: 3788043920 - Tcp ack: 3550414608 - Tcp flags: 16
+
+
 */
 
 #include <sys/types.h>          /* See NOTES */

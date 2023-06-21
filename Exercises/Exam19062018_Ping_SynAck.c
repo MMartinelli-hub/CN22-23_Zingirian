@@ -7,10 +7,79 @@
 - We define a tcp_segment struct
 - We define a tcp_pseudo for the tcp pseudo header (used to compute the checksum)
 - We modify the main
-   > the forge ip protocol parameter is set to 6
-   > the intercept is changed so to intercept TCP responses
+   > the intercept is changed so to intercept TCP responses with destination port in range 19000-19999
+   > when we intercept we send back a tcp segment having flags 18 == SYN+ACK
+   > we wait for a tcp segment in response having flags 16 == ACK 
 
    All the modifications to the code can be found by searching for '##'
+
+# OUTPUT #
+> tested using "$telnet 88.80.187.84 19646" from a remote machine
+
+>  !! TCP DST PORT IN RANGE 19000-19999 !!
+   !! FORGING MANUALLY TCP RESPONSE !!
+
+   RECEIVED ##################################
+
+   000: f2(242) 3c(060) 91(145) db(219)
+   004: c2(194) 98(152) 00(000) 00(000)
+   008: 0c(012) 9f(159) f0(240) 0d(013)
+   012: 08(008) 00(000)
+
+   000: 45(069) 00(000) 00(000) 3c(060)
+   004: 17(023) ca(202) 40(064) 00(000)
+   008: 32(050) 06(006) 36(054) 16(022)
+   012: 59(089) 28(040) 8e(142) 0f(015)
+   016: 58(088) 50(080) bb(187) 54(084)
+   020: 9c(156) 90(144) 4c(076) be(190)
+   024: cc(204) e5(229) 0f(015) 02(002)
+   028: 00(000) 00(000) 00(000) 00(000)
+   032: a0(160) 02(002) 72(114) 10(016)
+   036: ee(238) 06(006) 00(000) 00(000)
+   TCP segment: 74 bytes sent
+   Eth type: 8 - Ip proto: 6 - Tcp src: 40080 - Tcp dst: 19646 - Tcp seq: 3437563650 - Tcp ack: 0 - Tcp flags: 2
+
+   SENT ######################################
+
+   000: 00(000) 00(000) 0c(012) 9f(159)
+   004: f0(240) 0d(013) f2(242) 3c(060)
+   008: 91(145) db(219) c2(194) 98(152)
+   012: 08(008) 00(000)
+
+   000: 45(069) 00(000) 00(000) 28(040)
+   004: cd(205) ab(171) 00(000) 00(000)
+   008: 80(128) 06(006) 72(114) 48(072)
+   012: 58(088) 50(080) bb(187) 54(084)
+   016: 59(089) 28(040) 8e(142) 0f(015)
+   020: 4c(076) be(190) 9c(156) 90(144)
+   024: 34(052) dc(220) 25(037) 93(147)
+   028: cc(204) e5(229) 0f(015) 03(003)
+   032: 50(080) 12(018) ff(255) ff(255)
+   036: 95(149) 4f(079) 00(000) 00(000)
+   TCP segment: 54 bytes sent
+   Eth type: 8 - Ip proto: 6 - Tcp src: 19646 - Tcp dst: 40080 - Tcp seq: 886842771 - Tcp ack: 3437563651 - Tcp flags: 18
+
+   ############ ACK RECEIVED #############
+
+   000: f2(242) 3c(060) 91(145) db(219)
+   004: c2(194) 98(152) 00(000) 00(000)
+   008: 0c(012) 9f(159) f0(240) 0d(013)
+   012: 08(008) 00(000)
+
+   000: 45(069) 00(000) 00(000) 28(040)
+   004: 17(023) cb(203) 40(064) 00(000)
+   008: 32(050) 06(006) 36(054) 29(041)
+   012: 59(089) 28(040) 8e(142) 0f(015)
+   016: 58(088) 50(080) bb(187) 54(084)
+   020: 9c(156) 90(144) 4c(076) be(190)
+   024: cc(204) e5(229) 0f(015) 03(003)
+   028: 34(052) dc(220) 25(037) 94(148)
+   032: 50(080) 10(016) 72(114) 10(016)
+   036: 23(035) 40(064) 00(000) 00(000)
+   TCP segment: 54 bytes received
+   Eth type: 8 - Ip proto: 6 - Tcp src: 40080 - Tcp dst: 19646 - Tcp seq: 3437563651 - Tcp ack: 886842772 - Tcp flags: 16
+
+
 */
 
 #include <sys/types.h>          /* See NOTES */
