@@ -694,6 +694,11 @@ if((addr->sa_family == AF_INET)){
 else { myerrno = EINVAL; return -1; }
 }
 
+unsigned char syn_scale = -1;
+unsigned char synack_scale = -1;
+unsigned short tcp_sport_syn = -1;
+unsigned short tcp_sport_synack = -1;
+
 int fsm(int s, int event, struct ip_datagram * ip)
 {
 struct tcpctrlblk * tcb = fdinfo[s].tcb;
@@ -735,25 +740,17 @@ switch(tcb->st){
 	case SYN_SENT:	
 		if(event == PKT_RCV){
 			if((tcp->flags&SYN) && (tcp->flags&ACK) && (htonl(tcp->ack)==tcb->seq_offs + 1)){
-				tcb->seq_offs ++;
-				tcb->ack_offs = htonl(tcp->seq) + 1;	
-				free(tcb->txfirst->segment);
-				free(tcb->txfirst);
-				tcb->txfirst = tcb->txlast = NULL;	
-				prepare_tcp(s,ACK,NULL,0,NULL,0);	
-				tcb->st = ESTABLISHED;
-
-            unsigned char* opt = ((unsigned char*)tcp)+20;
+				unsigned char* opt = ((unsigned char*)tcp)+20;
             unsigned int opt_len = ((tcp->d_offs_res >> 4)*4)-20;
             opt = findoption(opt, opt_len);
             if((unsigned char*)-1 != opt) {
                tcb->rcv_win_scale = opt[2];
                if(tcb->rcv_win_scale>14) {
-                  printf("## WINDOW SCALE > 14. Set at 14 ##\n");
+                  printf("SYNACK ## WINDOW SCALE > 14. Set at 14 ##\n");
                   tcb->rcv_win_scale = 14;
                }
                printf("SYNACK ## WINDOW SCALE OPT FOUND. Value: %u ##\n", tcb->rcv_win_scale);
-
+               synack_scale = opt[2]; tcp_sport_synack = tcp->s_port;
                unsigned int winsize = ntohs(tcp->window);
                for(int k=0; k<(unsigned int)opt[2]; k++) {
                   winsize = winsize * 2;
@@ -762,6 +759,14 @@ switch(tcb->st){
             } else {
                printf("SYNACK ## NO WINDOW SCALE OPTION FOUND ##\n");
             }
+            
+            tcb->seq_offs ++;
+				tcb->ack_offs = htonl(tcp->seq) + 1;	
+				free(tcb->txfirst->segment);
+				free(tcb->txfirst);
+				tcb->txfirst = tcb->txlast = NULL;	
+				prepare_tcp(s,ACK,NULL,0,NULL,0);	
+				tcb->st = ESTABLISHED;
 			}
 		}
 		break;
@@ -793,6 +798,26 @@ switch(tcb->st){
 		break;
 case LISTEN:
   if((event == PKT_RCV) && ((tcp->flags)&SYN)){
+      unsigned char* opt = ((unsigned char*)tcp)+20;
+      unsigned int opt_len = ((tcp->d_offs_res >> 4)*4)-20;
+      opt = findoption(opt, opt_len);
+      if((unsigned char*)-1 != opt) {
+         tcb->rcv_win_scale = opt[2];
+         if(tcb->rcv_win_scale>14) {
+            printf("SYN ## WINDOW SCALE > 14. Set at 14 ##\n");
+            tcb->rcv_win_scale = 14;
+         }
+         printf("SYN ## WINDOW SCALE OPT FOUND. Value: %u ##\n", tcb->rcv_win_scale);
+
+         unsigned int winsize = ntohs(tcp->window);
+         for(int k=0; k<(unsigned int)opt[2]; k++) {
+            winsize = winsize * 2;
+         }
+         printf("SYN ## WINDOW SIZE: %u * 2^%u = %u ##\n", ntohs(tcp->window), opt[2], winsize);
+      } else {
+         printf("SYN ## NO WINDOW SCALE OPTION FOUND ##\n");
+      }
+
     tcb->rxbuffer=(unsigned char*)malloc(RXBUFSIZE);
     tcb->seq_offs=rand();
     tcb->txfree = TXBUFSIZE; //Dynamic buffer
@@ -1038,8 +1063,6 @@ for( ; n!=NULL; n = n->next)
 printf("\n");
 }
 
-unsigned int syn_scale = 0;
-unsigned int synack_scale = 0;
 
 void myio(int number)
 {
@@ -1101,6 +1124,7 @@ if (fds[0].revents & POLLIN){
                      if((unsigned char*)-1 != opt) {
                         printf("SYN ## WINDOW SCALE OPT FOUND. Value: %u ##\n", opt[2]);
                         unsigned int winsize = ntohs(tcp->window);
+                        syn_scale = opt[2]; tcp_sport_syn = tcp->s_port;
                         for(int k=0; k<(unsigned int)opt[2]; k++) {
                            winsize = winsize * 2;
                         }
@@ -1108,7 +1132,21 @@ if (fds[0].revents & POLLIN){
                      } else {
                         printf("SYN ## NO WINDOW SCALE OPTION FOUND ##\n");
                      }
-                  } 
+                  } else if(tcp->flags == 16 && syn_scale != -1 && tcp->s_port == tcp_sport_syn) {
+                     unsigned int winsize = ntohs(tcp->window);
+                     for(int k=0; k<(unsigned int)syn_scale; k++) {
+                        winsize = winsize * 2;
+                     }
+                     printf("ACK ## WINDOW SIZE: %u * 2^%u = %u ##\n", ntohs(tcp->window), syn_scale, winsize);
+                     } else if(tcp->flags == 16 && synack_scale != -1 && tcp->s_port == tcp_sport_synack) {
+                        unsigned int winsize = ntohs(tcp->window);
+                        for(int k=0; k<(unsigned int)synack_scale; k++) {
+                           winsize = winsize * 2;
+                        }
+                        printf("ACK ## WINDOW SIZE: %u * 2^%u = %u ##\n", ntohs(tcp->window), synack_scale, winsize);
+                     } 
+
+                     
                   /*else {
                      unsigned char* opt = ((unsigned char*)tcp)+20;
                      unsigned int opt_len = ((tcp->d_offs_res >> 4)*4)-20;
