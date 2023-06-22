@@ -1,5 +1,9 @@
-# CN22-23_Zingirian
-
+# CN23_UniPd_Zingirian
+#### Course Notes of Computer Network
+#### Professor: Nicola Zingirian
+#### A.Y.: 2022-23
+#### Master's Degree in Computer Engineering at UniPd
+##
 ## Particularly noticeable:
 - [02_ping.c](https://github.com/MMartinelli-hub/CN22-23/blob/main/02_ping.c)
 - [Exam-11-07-2018_Ping_Nat.c](https://github.com/MMartinelli-hub/CN22-23/blob/main/Exercises/Exam-11-07-2018_Ping_Nat.c)
