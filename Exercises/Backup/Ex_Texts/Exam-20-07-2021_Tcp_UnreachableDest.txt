@@ -1,0 +1,21 @@
+The connect(2) Unix system call handles all the cases in which the TCP connection might not be successfully established, i.e.
+    1) The destination host or network IP address is not reachable 
+    2) The remote  host refused the connection
+    3) The remote host does not send any reply to the handshake SYN request before a timeout 
+
+You are requested to improve the tcp.c program developed in the class to make the myconnect function support the aforementioned case 1,  handling the appropriate error code defined in the connect(2) manual accordingly.
+
+The unreachability information comes via a specific ICMP packet, sent by one of the traversed routers to the source node, when the router realizes that the IP packet destination cannot be reached.
+
+Identify the proper ICMP packet in the RFC792 and integrate the mechanism in the tcp.c to support the correct myconnect error handling. 
+
+To test the program try to connect to the address 50.87.68.238,  port 80.  
+ 
+In the top of your source program, add the following contents in a /*comment section*/ :
+    1) Describe the point of the program where you apply the changes
+    2) Define the logic of the changes
+    3) Report the results of the test 
+OR
+    1) RETIRED, if you want to cancel the exam. 
+
+Please use as a local port 19XXX  where XXX are the last three digits of your registration number. 

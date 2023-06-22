@@ -1,0 +1,32 @@
+Your home directory1 contains the esame.c source file, that is the copy of /CN22/congctrl.c
+program. 
+
+This program implements a simple all-in-one Web Server including the HTTP / TCP / IP /
+Ethernet stack. 
+
+A Web browser can connect to it through the URL
+http://88.80.187.84:<port>/file.jpg (the file.jpg is )
+where <port>2 is the port number specified in the first command line parameter argv[1] and
+the file.jpg is in saved your home
+
+The esame.c program implements the cumulative acknowledgment (inspired by the “Go-back-N”
+ARQ mechanism), as defined in the earliest TCP, in RFC 793 Section 3,3 .
+
+RFC 1072 provides the TCP protocol with more accurate acknowledgment data (inspired by the
+“Selective Repeat” ARQ mechanism), defining a pair of additional TCP header extensions, called
+the “Selective Acknowledgment” (or “SACK”) option and the “SACK Permit” option, respectively.
+
+When the active opener permits the SACK, via the “SACK Permit option” on the SYN segment,
+both the TCP peers may add new details on their received data, via the “SACK” option.
+You are requested to edit the esame.c source program to implement the SACK options following
+the specifications of the Section 3 of the RFC 1072, and to test the proper execution of the
+compiled program.
+
+To test the acknowledgment mechanism, you are suggested to simulate the packet loss by
+randomly dropping, e.g., the 10% of the incoming frames, directly at layer 2.
+
+Add the following contents in a /*comment section*/ in the top lines of the source:
+1) Describe the point of the program where you apply your changes
+2) Comment how your logic coomplies with the specification of the RFC 1072, Section 3.
+3) Report the results of the test comparing the execution of the original and of the modified
+programs
